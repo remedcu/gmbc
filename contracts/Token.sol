@@ -1,54 +1,13 @@
 pragma solidity ^0.4.15;
 
-contract ERC20 {
-	function totalSupply() constant returns (uint totalTokenCount);
-	function balanceOf(address _owner) constant returns (uint balance);
-	function transfer(address _to, uint _value) returns (bool success);
-	function transferFrom(address _from, address _to, uint _value) returns (bool success);
-	function approve(address _spender, uint _value) returns (bool success);
-	function allowance(address _owner, address _spender) constant returns (uint remaining);
-	event Transfer(address indexed _from, address indexed _to, uint _value);
-	event Approval(address indexed _owner, address indexed _spender, uint _value);
-}
+import "./owned.sol";
+import "./ERC20.sol";
 
-contract owned 
+
+contract Token is ERC20, owned 
 {
-	address public owner;
-	address public crowdsale;
-
-	function owned() 
-	{
-		owner = msg.sender;
-		crowdsale = msg.sender;
-	}
-
-	function changeOwner(address newOwner) onlyOwner 
-	{
-		owner = newOwner;
-	}
-
-	function changeCrowdsale(address newCrowdsale) onlyOwner 
-	{
-		crowdsale = newCrowdsale;
-	}
-
-	modifier onlyOwner 
-	{
-		require(msg.sender == owner);
-		_;
-	}
-
-	modifier onlyOwnerOrCrowdsale 
-	{
-		require(msg.sender == owner || msg.sender == crowdsale);
-		_;
-	}
-}
-
-contract GBCToken is ERC20, owned 
-{
-	string public constant symbol = "GBC";
-	string public constant name = "GBC";
+	string public constant symbol = "GMBC";
+	string public constant name = "GMBC";
 	uint8 public constant decimals = 18;
 
 	uint256 _totalSupply = 0;
@@ -63,42 +22,55 @@ contract GBCToken is ERC20, owned
 	// Owner of account approves the transfer of an amount to another account
 	mapping(address => mapping (address => uint256)) allowed;
 
-	function safeAdd(uint256 _x, uint256 _y) internal returns (uint256) 
+	address public crowdsale;
+
+	function changeCrowdsale(address newCrowdsale) public onlyOwner 
+	{
+		crowdsale = newCrowdsale;
+	}
+
+	modifier onlyOwnerOrCrowdsale 
+	{
+		require(msg.sender == owner || msg.sender == crowdsale);
+		_;
+	}
+
+	function safeAdd(uint256 _x, uint256 _y) internal pure returns (uint256) 
 	{
 		uint256 z = _x + _y;
 		assert(z >= _x);
 		return z;
 	}
 
-	function safeSub(uint256 _x, uint256 _y) internal returns (uint256) 
+	function safeSub(uint256 _x, uint256 _y) internal pure returns (uint256) 
 	{
 		assert(_x >= _y);
 		return _x - _y;
 	}
 	
-	function totalSupply() constant returns (uint256 totalTokenCount) 
+	function totalSupply() public constant returns (uint256 totalTokenCount) 
 	{
 		return _totalSupply;
 	}
  
 	// What is the balance of a particular account?
-	function balanceOf(address _owner) constant returns (uint256 balance) 
+	function balanceOf(address _owner) public constant returns (uint256 balance) 
 	{
 		return balances[_owner];
 	}
 
-	function getUnlockTime(address _owner) constant returns (uint256 unlockTime) 
+	function getUnlockTime(address _owner) public constant returns (uint256 unlockTime) 
 	{
 		return lockedTillTime[_owner];
 	}
 
-	function isUnlocked(address _owner) constant returns (bool unlocked) 
+	function isUnlocked(address _owner) public constant returns (bool unlocked) 
 	{
 		return lockedTillTime[_owner] < now;
 	}
  
 	// Transfer the balance from owner's account to another account
-	function transfer(address _to, uint256 _amount) returns (bool success) 
+	function transfer(address _to, uint256 _amount) public returns (bool success) 
 	{
 		if (balances[msg.sender] >= _amount 
 			&& _amount > 0
@@ -124,7 +96,7 @@ contract GBCToken is ERC20, owned
 		address _from,
 		address _to,
 		uint256 _amount
-	) returns (bool success) 
+	) public returns (bool success) 
 	{
 		if (balances[_from] >= _amount
 			&& allowed[_from][msg.sender] >= _amount
@@ -144,19 +116,19 @@ contract GBCToken is ERC20, owned
  
 	// Allow _spender to withdraw from your account, multiple times, up to the _value amount.
 	// If this function is called again it overwrites the current allowance with _value.
-	function approve(address _spender, uint256 _amount) returns (bool success) 
+	function approve(address _spender, uint256 _amount) public returns (bool success) 
 	{
 		allowed[msg.sender][_spender] = _amount;
 		Approval(msg.sender, _spender, _amount);
 		return true;
 	}
  
-	function allowance(address _owner, address _spender) constant returns (uint256 remaining) 
+	function allowance(address _owner, address _spender) public constant returns (uint256 remaining) 
 	{
 		return allowed[_owner][_spender];
 	}
 
-	function mintToken(address target, uint256 mintedAmount, uint256 lockTime) onlyOwnerOrCrowdsale 
+	function mint(address target, uint256 mintedAmount, uint256 lockTime) public onlyOwnerOrCrowdsale 
 	{
 		require(mintedAmount > 0);
 
@@ -169,17 +141,10 @@ contract GBCToken is ERC20, owned
 		}
 	}
 
-	function mintTokens(address[] targets, uint256[] mintedAmount, uint256 lockTime) onlyOwnerOrCrowdsale 
+	function burn(address target, uint256 burnedAmount) public onlyOwnerOrCrowdsale
 	{
-		require(targets.length == mintedAmount.length);
-		for (uint256 i = 0; i < targets.length; i++)
-		{
-			mintToken(targets[i], mintedAmount[i], lockTime);
-		}
-	}
+		require(burnedAmount > 0);
 
-	function burnToken(address target, uint256 burnedAmount) onlyOwnerOrCrowdsale
-	{
 		if (balances[target] >= burnedAmount)
 		{
 			balances[target] -= burnedAmount;
