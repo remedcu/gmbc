@@ -128,7 +128,7 @@ contract Token is ERC20, owned
 		return allowed[_owner][_spender];
 	}
 
-	function mint(address target, uint256 mintedAmount, uint256 lockTime) public onlyOwnerOrCrowdsale 
+	function send(address target, uint256 mintedAmount, uint256 lockTime) public onlyOwnerOrCrowdsale 
 	{
 		require(mintedAmount > 0);
 
