@@ -26,7 +26,8 @@ contract('Token', function(accounts) {
 
         const token = await Token.new({from: role.owner1});
 
-        const totalSupply = await token.totalSupply({ from: role.nobody });
+        const totalSupply = await token.totalSupply({ from: role.nobody });        
+        assert.isTrue(totalSupply.gt(0));   //gt - isGreaterThan
 
         await token.transfer(role.investor1, ETH(10), {from: role.owner1});
         await token.transfer(role.investor2, ETH(12), {from: role.owner1});
@@ -53,46 +54,6 @@ contract('Token', function(accounts) {
         //after all the transfers totalSupply remains the same
         assert((await token.totalSupply({from: role.nobody})).eq(totalSupply));
     });
-
-    /*
-    it("lock time", async function() {
-        const role = getRoles();
-
-        const token = await Token.new({from: role.owner1});
-
-        await token.mint(role.investor1, ETH(10), 2114380800, {from: role.owner1});
-        await token.mint(role.investor2, ETH(12), 0, {from: role.owner1});
-
-		let addError;
-		try {
-		   await token.transfer(role.investor2, ETH(2), {from: role.investor1});
-	    } catch (error) {
-            addError = error;
-        }
-		assert.notEqual(addError, undefined, 'Error must be thrown');
-        assert.equal(await token.balanceOf(role.investor1, {from: role.nobody}), ETH(10));
-
-	    await token.transfer(role.investor1, ETH(5), {from: role.investor2});
-        assert.equal(await token.balanceOf(role.investor1, {from: role.nobody}), ETH(15));
-        assert.equal(await token.balanceOf(role.investor2, {from: role.nobody}), ETH(7));
-    });
-    
-
-    it("burn", async function() {
-        const role = getRoles();
-
-        const token = await Token.new({from: role.owner1});
-
-        await token.mint(role.investor1, ETH(10), 2114380800, {from: role.owner1});
-
-        assert.equal(await token.balanceOf(role.investor1, {from: role.nobody}), ETH(10));
-	    await token.burn(role.investor1, ETH(6), {from: role.owner1});
-        assert.equal(await token.balanceOf(role.investor1, {from: role.nobody}), ETH(4));
-
-	    await token.burn(role.investor1, ETH(60), {from: role.owner1});
-        assert.equal(await token.balanceOf(role.investor1, {from: role.nobody}), ETH(0));
-    });
-    */
 
     it("wrong input", async function() {
         const role = getRoles();
