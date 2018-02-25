@@ -1,7 +1,6 @@
 {
   "name": "gamblica-gmbc",
   "version": "1.0.0",
-  "description": "",
   "main": "truffle.js",
   "directories": {
     "test": "test"
@@ -22,5 +21,7 @@
   "homepage": "https://github.com/gamblica-gmbc/gmbc#readme",
   "dependencies": {
     "zeppelin-solidity": "1.7.0"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }
