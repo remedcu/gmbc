@@ -1,0 +1,26 @@
+{
+  "name": "gamblica-gmbc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gamblica-gmbc/gmbc.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gamblica-gmbc/gmbc/issues"
+  },
+  "homepage": "https://github.com/gamblica-gmbc/gmbc#readme",
+  "dependencies": {
+    "zeppelin-solidity": "1.7.0"
+  }
+}

@@ -1,7 +1,7 @@
 'use strict';
 
 
-const Token = artifacts.require("./Token.sol");
+const Token = artifacts.require("./GMBCToken.sol");
 
 
 
