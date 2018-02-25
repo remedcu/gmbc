@@ -11,7 +11,7 @@ contract GMBCToken is HasNoEther, CappedToken  {
 
 	uint256 public GMBC_TOKEN_CAP = 10000 * (10 ** uint256(decimals));	//uint256 cast to prevent compiler warnings
 
-	address public accountant;
+	address public accountant;	//account responsible for withdrawing funds
 	mapping(address => Fund) public funds;
 
 	event FundsAmountChanged(address tokenOwner, uint256 value, bytes32 history);
