@@ -26,14 +26,16 @@ contract('Token', function(accounts) {
 
         const token = await Token.new({from: role.owner1});
 
-        await token.mint(role.investor1, ETH(10), 0, {from: role.owner1});
-        await token.mint(role.investor2, ETH(12), 0, {from: role.owner1});
+        const totalSupply = await token.totalSupply({ from: role.nobody });
+
+        await token.transfer(role.investor1, ETH(10), {from: role.owner1});
+        await token.transfer(role.investor2, ETH(12), {from: role.owner1});
 
         await token.name({from: role.nobody});
         await token.symbol({from: role.nobody});
         await token.decimals({from: role.nobody});
 
-        assert((await token.totalSupply({from: role.nobody})).eq(ETH(22)));
+        
         assert.equal(await token.balanceOf(role.investor1, {from: role.nobody}), ETH(10));
 
         await token.transfer(role.investor2, ETH(2), {from: role.investor1});
@@ -47,8 +49,12 @@ contract('Token', function(accounts) {
         assert.equal(await token.balanceOf(role.investor1, {from: role.nobody}), ETH(6));
         assert.equal(await token.balanceOf(role.investor2, {from: role.nobody}), ETH(14));
         assert.equal(await token.balanceOf(role.investor3, {from: role.nobody}), ETH(2));
+
+        //after all the transfers totalSupply remains the same
+        assert((await token.totalSupply({from: role.nobody})).eq(totalSupply));
     });
 
+    /*
     it("lock time", async function() {
         const role = getRoles();
 
@@ -70,6 +76,7 @@ contract('Token', function(accounts) {
         assert.equal(await token.balanceOf(role.investor1, {from: role.nobody}), ETH(15));
         assert.equal(await token.balanceOf(role.investor2, {from: role.nobody}), ETH(7));
     });
+    
 
     it("burn", async function() {
         const role = getRoles();
@@ -85,6 +92,7 @@ contract('Token', function(accounts) {
 	    await token.burn(role.investor1, ETH(60), {from: role.owner1});
         assert.equal(await token.balanceOf(role.investor1, {from: role.nobody}), ETH(0));
     });
+    */
 
     it("wrong input", async function() {
         const role = getRoles();
@@ -97,6 +105,7 @@ contract('Token', function(accounts) {
 	    } catch (error) {
             addError = error;
         }
+        assert.notEqual(addError, undefined, 'Error must be thrown');
 
 		let addError2;
 		try {
