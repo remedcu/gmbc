@@ -2,8 +2,10 @@ pragma solidity ^0.4.18;
 
 import "zeppelin-solidity/contracts/token/ERC20/CappedToken.sol"; 
 import "zeppelin-solidity/contracts/ownership/HasNoEther.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
-contract GMBCToken is HasNoEther, CappedToken  {
+contract GMBCToken is HasNoEther, CappedToken {
+	using SafeMath for uint256;
 
 	string public constant name = "Gamblica Coin";
 	string public constant symbol = "GMBC";
@@ -11,15 +13,13 @@ contract GMBCToken is HasNoEther, CappedToken  {
 
 	uint256 public GMBC_TOKEN_CAP = 10000 * (10 ** uint256(decimals));	//uint256 cast to prevent compiler warnings
 
-	address public accountant;	//account responsible for withdrawing funds
-	mapping(address => Fund) public funds;
+	address public accountant;	//account responsible for withdrawing funds, also a game fund (20%)
+	address public fund;		//20% of all tokens sold will be minted here (3% bounty, 2% founders, 5% advisory, 10% team)
 
-	event FundsAmountChanged(address tokenOwner, uint256 value, bytes32 history);
+	mapping(address => bytes32) public history;
 
-	struct Fund {
-		bytes32 history;	//history hash
-		uint256 amount;		//locked amount (tokens)
-	}
+	event GMBCDeposited(address tokenOwner, uint256 value, bytes32 history);
+	event GMBCWithdrawn(address tokenOwner, uint256 value, bytes32 history);
 
 	modifier onlyAccountant() {
 		require(msg.sender == accountant);
@@ -37,27 +37,26 @@ contract GMBCToken is HasNoEther, CappedToken  {
 		
 	}
 
-	function addFunds(uint256 _value, bytes32 _history) public returns (bool) {
-		Fund storage fund = funds[msg.sender];
+	function depositGMBC(uint256 _amount, bytes32 _history) public returns (bool) {
+		require(_amount > 0);
 
-		require(_value > 0 && _value <= balances[msg.sender] - fund.amount);
+		transfer(accountant, _amount);
 
-		fund.amount += _value;
-		fund.history = _history;
+		history[msg.sender] = _history;
 
-		FundsAmountChanged(msg.sender, fund.amount, _history);
-
+		GMBCDeposited(msg.sender, _amount, _history);
+		
 		return true;
 	}
 
-	function withdrawFunds(address _tokenOwner, uint256 _value, bytes32 _history) onlyAccountant public returns (bool) {
-		require(_value >= 0);
+	function withdrawGMBC(address _tokenOwner, uint256 _amount, bytes32 _history) onlyAccountant public returns (bool) {		
+		require(_amount > 0);
 
-		Fund storage fund = funds[_tokenOwner];
-		fund.amount = 0;
-		fund.history = _history;
+		transfer(_tokenOwner, _amount);
 
-		balances[_tokenOwner] += _value;
+		history[_tokenOwner] = _history;
+
+		GMBCWithdrawn(_tokenOwner, _amount, _history);
 
 		return true;
 	}
@@ -66,9 +65,7 @@ contract GMBCToken is HasNoEther, CappedToken  {
 		accountant = _newAccounant;
 	}
 
-	function transfer(address _to, uint256 _value) public returns (bool) {
-		require(_value <= balances[msg.sender] - funds[msg.sender].amount);
-		return super.transfer(_to, _value);
-	}
-
+	function historyOf(address _tokenOwner) public view returns (bytes32) {
+    	return history[_tokenOwner];
+  	}
 }
