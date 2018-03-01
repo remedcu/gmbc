@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/gamblica-gmbc/gmbc#readme",
   "dependencies": {
+    "truffle": "^4.1.0",
     "zeppelin-solidity": "1.7.0"
   },
   "devDependencies": {},

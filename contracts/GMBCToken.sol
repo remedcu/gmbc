@@ -11,10 +11,10 @@ contract GMBCToken is HasNoEther, CappedMintableToken {
 	string public constant symbol = "GMBC";
 	uint8 public constant decimals = 18;
 
-	uint256 public TOKEN_SALE_CAP = 600000000 * (10 ** uint256(decimals));	//uint256 cast to prevent compiler warnings
+	uint256 public TOKEN_SALE_CAP = 600000000 * (10 ** uint256(decimals));
 	uint256 public END_OF_MINT_DATE = 1527811200;	// Fri, 01 Jun 2018 00:00:00 +0000 in RFC 822, 1036, 1123, 2822
 
-	bool public finalized = false;	//
+	bool public finalized = false;
 
 	/**
 	 * GMBCToken
@@ -36,7 +36,7 @@ contract GMBCToken is HasNoEther, CappedMintableToken {
 		require(!finalized && now > publicSaleEnd);		
 		require(_fund != address(0));
 
-		uint256 amount = totalSupply_.mul(4).div(6);	// 40% left
+		uint256 amount = totalSupply_.mul(4).div(6);	// +40% 
 
 		totalSupply_ = totalSupply_.add(amount);
     	balances[_fund] = balances[_fund].add(amount);
