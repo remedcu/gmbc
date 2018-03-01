@@ -15,7 +15,8 @@ contract('Token', function(accounts) {
             investor2: accounts[4],
             investor3: accounts[5],
             nobody: accounts[6],
-            fund: accounts[7]       
+            fund: accounts[7],
+            crowdsale: accounts[8]
         };
     }
 
@@ -47,6 +48,7 @@ contract('Token', function(accounts) {
 
         const token = await Token.new({from: role.owner1});        
         
+        token.setCrowdsale(role.crowdsale, { from: role.owner1 });
 
         await token.name({from: role.nobody});
         await token.symbol({from: role.nobody});
@@ -71,14 +73,14 @@ contract('Token', function(accounts) {
 
         let investorIndex = 0;
         while (totalSupply.lte(cap)) {            
-            await token.mint(invsetors[investorIndex], gmbsPerTransfer, { from: role.owner1 });
+            await token.sendAlias(invsetors[investorIndex], gmbsPerTransfer, 0, { from: role.crowdsale });
             investorIndex = (investorIndex + 1) % invsetors.length;
 
             assert((await token.totalSupply({ from: role.nobody })).eq(totalSupply));
             totalSupply = totalSupply.plus(gmbsPerTransfer);            
         }
 
-        assert(true === await throwsRevert(token.mint(gmbsPerTransfer, invsetors[investorIndex], { from: role.owner1 })))
+        assert(true === await throwsRevert(token.sendAlias(gmbsPerTransfer, invsetors[investorIndex], 0, { from: role.crowdsale })))
 
         const left2mint = cap.minus(totalSupply.minus(gmbsPerTransfer));
         await token.mint(invsetors[investorIndex], left2mint, { from: role.owner1 })

@@ -16,6 +16,8 @@ contract GMBCToken is HasNoEther, CappedMintableToken {
 
 	bool public finalized = false;
 
+	
+
 	/**
 	 * GMBCToken
 	 * https://gamblica.com 
@@ -26,6 +28,7 @@ contract GMBCToken is HasNoEther, CappedMintableToken {
 	{
 		
 	}
+
 	/**
 		Performs the final stage of the token sale, 
 		mints additional 40% of token fund,

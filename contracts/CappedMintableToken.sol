@@ -19,8 +19,20 @@ contract CappedMintableToken is StandardToken, Ownable {
     _;
   }
 
+  modifier onlyOwnerOrCrowdsale() {
+    require(msg.sender == owner || msg.sender == crowdsale);
+    _;
+  }
+
   uint256 public publicSaleEnd;
   uint256 public cap;
+  address public crowdsale;
+
+	function setCrowdsale(address _crowdsale) public onlyOwner {
+		crowdsale = _crowdsale;
+	}
+
+  
 
   function CappedMintableToken(uint256 _cap, uint256 _publicSaleEnd) public {
     require(_publicSaleEnd > now);
@@ -30,13 +42,18 @@ contract CappedMintableToken is StandardToken, Ownable {
     cap = _cap;
   }
 
+  /* StartICO integration, lockTime is ignored (ignore the warning) */
+  function send(address target, uint256 mintedAmount, uint256 lockTime) public onlyOwnerOrCrowdsale {
+    mint(target, mintedAmount);
+  }
+
   /**
    * @dev Function to mint tokens
    * @param _to The address that will receive the minted tokens.
    * @param _amount The amount of tokens to mint.
    * @return A boolean that indicates if the operation was successful.
    */
-  function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
+  function mint(address _to, uint256 _amount) onlyOwnerOrCrowdsale canMint public returns (bool) {
     require(totalSupply_.add(_amount) <= cap);
     require(_amount > 0);
 
