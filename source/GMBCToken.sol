@@ -1,7 +1,10 @@
 pragma solidity ^0.4.18;
 
-import "zeppelin-solidity/contracts/ownership/HasNoEther.sol";
-import "zeppelin-solidity/contracts/math/SafeMath.sol";
+// in order for this to be flattened & compiled: zeppelin-solidity from /node_modules should be copied to source/ before hand
+// TODO: automate this process
+
+import "./zeppelin-solidity/contracts/ownership/HasNoEther.sol";
+import "./zeppelin-solidity/contracts/math/SafeMath.sol";
 import "./CappedMintableToken.sol";
 
 contract GMBCToken is HasNoEther, CappedMintableToken {

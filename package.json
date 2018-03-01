@@ -6,7 +6,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "truffle-flattener ./source/GMBCToken.sol >./contracts/GMBCToken.sol && truffle compile --all"
   },
   "repository": {
     "type": "git",

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.18;
 
-import "zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
-import "zeppelin-solidity/contracts/ownership/Ownable.sol";
-import "zeppelin-solidity/contracts/math/SafeMath.sol";
+import "./zeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "./zeppelin-solidity/contracts/ownership/Ownable.sol";
+import "./zeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
  * @title Mintable token with an end-of-mint date and token cap
@@ -64,6 +64,7 @@ contract CappedMintableToken is StandardToken, Ownable {
     return true;
   }
 
+  
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(now > publicSaleEnd);
 
@@ -75,4 +76,5 @@ contract CappedMintableToken is StandardToken, Ownable {
 
     return super.transferFrom(_from, _to, _value);
   }
+  
 }
