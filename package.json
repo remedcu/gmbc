@@ -6,7 +6,8 @@
     "test": "test"
   },
   "scripts": {
-    "compile": "truffle-flattener ./source/GMBCToken.sol >./contracts/GMBCToken.sol && truffle compile --all"
+    "compile": "truffle-flattener ./source/GMBCToken.sol >./contracts/GMBCToken.sol && truffle compile --all",
+    "develop": "truffle-flattener ./source/GMBCToken.sol >./contracts/GMBCToken.sol && truffle develop"
   },
   "repository": {
     "type": "git",
