@@ -7,11 +7,11 @@ import "./CappedMintableToken.sol";
 contract GMBCToken is HasNoEther, CappedMintableToken {
 	using SafeMath for uint256;
 
-	string public constant name = "Gamblica Coin";
+	string public constant name = "Official Gamblica Coin";
 	string public constant symbol = "GMBC";
 	uint8 public constant decimals = 18;
 
-	uint256 public TOKEN_SALE_CAP = 1000000000 * (10 ** uint256(decimals));	//uint256 cast to prevent compiler warnings
+	uint256 public TOKEN_SALE_CAP = 600000000 * (10 ** uint256(decimals));	//uint256 cast to prevent compiler warnings
 	uint256 public END_OF_MINT_DATE = 1527811200;	// Fri, 01 Jun 2018 00:00:00 +0000 in RFC 822, 1036, 1123, 2822
 
 	bool public finalized = false;	//
@@ -33,10 +33,10 @@ contract GMBCToken is HasNoEther, CappedMintableToken {
 		(20% game fund, 10% team, 5% advisory board, 3% bounty, 2% founders)
 	*/
 	function finalize(address _fund) public onlyOwner returns (bool) {
-		require(!finalized && now > canMintUntil);		
+		require(!finalized && now > publicSaleEnd);		
 		require(_fund != address(0));
 
-		uint256 amount = totalSupply_.mul(40).div(100);
+		uint256 amount = totalSupply_.mul(4).div(6);	// 40% left
 
 		totalSupply_ = totalSupply_.add(amount);
     	balances[_fund] = balances[_fund].add(amount);
@@ -48,4 +48,6 @@ contract GMBCToken is HasNoEther, CappedMintableToken {
 		return true;
 	}
 
+
+	
 }

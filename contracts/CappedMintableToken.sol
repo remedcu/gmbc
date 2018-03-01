@@ -6,6 +6,7 @@ import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
  * @title Mintable token with an end-of-mint date and token cap
+ * Also transfer / transferFrom is available only after end-of-mint date
  * Based on zeppelin-solidity MintableToken & CappedToken
  */
 contract CappedMintableToken is StandardToken, Ownable {
@@ -14,18 +15,18 @@ contract CappedMintableToken is StandardToken, Ownable {
   event Mint(address indexed to, uint256 amount);
 
   modifier canMint() {
-    require(now <= canMintUntil);
+    require(now <= publicSaleEnd);
     _;
   }
 
-  uint256 public canMintUntil;
+  uint256 public publicSaleEnd;
   uint256 public cap;
 
-  function CappedMintableToken(uint256 _cap, uint256 _canMintUntil) public {
-    require(_canMintUntil > now);
+  function CappedMintableToken(uint256 _cap, uint256 _publicSaleEnd) public {
+    require(_publicSaleEnd > now);
     require(_cap > 0);
 
-    canMintUntil = _canMintUntil;
+    publicSaleEnd = _publicSaleEnd;
     cap = _cap;
   }
 
@@ -44,5 +45,17 @@ contract CappedMintableToken is StandardToken, Ownable {
     Mint(_to, _amount);
     Transfer(address(0), _to, _amount);
     return true;
+  }
+
+  function transfer(address _to, uint256 _value) public returns (bool) {
+    require(now > publicSaleEnd);
+
+    return super.transfer(_to, _value);
+  }
+
+  function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
+    require(now > publicSaleEnd);
+
+    return super.transferFrom(_from, _to, _value);
   }
 }
