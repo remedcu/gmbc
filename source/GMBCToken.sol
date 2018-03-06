@@ -1,8 +1,5 @@
 pragma solidity ^0.4.18;
 
-// in order for this to be flattened & compiled: zeppelin-solidity from /node_modules should be copied to source/ before hand
-// TODO: automate this process
-
 import "./zeppelin-solidity/contracts/ownership/HasNoEther.sol";
 import "./zeppelin-solidity/contracts/math/SafeMath.sol";
 import "./CappedMintableToken.sol";
@@ -10,16 +7,14 @@ import "./CappedMintableToken.sol";
 contract GMBCToken is HasNoEther, CappedMintableToken {
 	using SafeMath for uint256;
 
-	string public constant name = "Official Gamblica Coin";
+	string public constant name = "Gamblica Token";
 	string public constant symbol = "GMBC";
 	uint8 public constant decimals = 18;
 
-	uint256 public TOKEN_SALE_CAP = 600000000 * (10 ** uint256(decimals));
+	uint256 public TOKEN_SALE_CAP = 600000000 * (10 ** uint256(decimals));	// 60%, 40% will be minted on finalize
 	uint256 public END_OF_MINT_DATE = 1527811200;	// Fri, 01 Jun 2018 00:00:00 +0000 in RFC 822, 1036, 1123, 2822
 
 	bool public finalized = false;
-
-	
 
 	/**
 	 * GMBCToken
@@ -28,9 +23,7 @@ contract GMBCToken is HasNoEther, CappedMintableToken {
 	 */
 	function GMBCToken() public 
 		CappedMintableToken(TOKEN_SALE_CAP, END_OF_MINT_DATE)
-	{
-		
-	}
+	{}
 
 	/**
 		Performs the final stage of the token sale, 
